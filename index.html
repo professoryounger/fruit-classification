@@ -4,19 +4,66 @@
 <meta charset="UTF-8">
 <title>Fruit Classification Exercise</title>
 <style>
-body { font-family: Arial, sans-serif; line-height: 1.5; margin: 20px; }
+body { font-family: Arial, sans-serif; line-height: 1.5; margin: 20px; background-color: #f0f0f0; }
+.container { max-width: 800px; margin: auto; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+h1, h2 { color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 20px; }
 table { border-collapse: collapse; margin-bottom: 20px; width: 100%; max-width: 600px; }
-th, td { border: 1px solid #000; padding: 5px 10px; text-align: center; }
-h1, h2 { color: #333; }
-input[type=range] { width: 100%; max-width: 400px; }
-select { padding: 5px; font-size: 16px; }
-button { padding: 8px 12px; font-size: 16px; cursor: pointer; }
+th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+th { background-color: #f2f2f2; }
+.game-container {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 20px 0;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+.game-buttons button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 18px;
+    border-radius: 8px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.game-buttons button:hover {
+    background-color: #45a049;
+}
 #resultBox { margin-top: 20px; font-weight: bold; }
 ul { max-width: 600px; }
+.code-block {
+    position: relative;
+    background-color: #2b2b2b;
+    color: #f8f8f2;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+.code-block pre {
+    margin: 0;
+    overflow-x: auto;
+}
+.copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #555;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+}
+.copy-btn:hover {
+    background-color: #777;
+}
 </style>
 </head>
 <body>
-
+<div class="container">
 <h1>🍎🍌🍊 Fruit Classification Exercise</h1>
 <p>Welcome! In this exercise, we explore classifying fruits using weight, color, and texture.</p>
 
@@ -30,22 +77,54 @@ ul { max-width: 600px; }
 </tr>
 <tr><td>🍎 Apple</td><td>150</td><td>2</td><td>0</td></tr>
 <tr><td>🍎 Apple</td><td>170</td><td>2</td><td>0</td></tr>
-<tr><td>🍌 Banana</td><td>120</td><td>1</td><td>1</td></tr>
-<tr><td>🍌 Banana</td><td>130</td><td>1</td><td>1</td></tr>
+<tr><td>🍌 Banana</td><td>120</td><td>1</td><td>0</td></tr>
+<tr><td>🍌 Banana</td><td>130</td><td>1</td><td>0</td></tr>
 <tr><td>🍊 Orange</td><td>160</td><td>2</td><td>1</td></tr>
 </table>
 
-<h2>Step 1: Python Code Overview</h2>
-<p>We will create a simple classification model in Python. Here’s what each step does:</p>
-<pre><code># 1. Import libraries
+<h2>Guess the Fruit Game</h2>
+<p>This simple game challenges you to classify a fruit based on its features. It's a fun way to understand the core concept behind machine learning classification!</p>
+<div id="gameContainer" class="game-container">
+    <div id="gamePrompt">Click "Start Game" to begin!</div>
+    <div id="gameInfo"></div>
+    <div id="gameButtons" class="game-buttons" style="display:none;">
+        <button onclick="checkGuess('apple')">🍎 Apple</button>
+        <button onclick="checkGuess('banana')">🍌 Banana</button>
+        <button onclick="checkGuess('orange')">🍊 Orange</button>
+    </div>
+    <button id="startGameBtn" onclick="startGame()">Start Game</button>
+</div>
+
+<hr>
+
+<h2>Step 1: Python Code for Google Colab</h2>
+<p>Each of the following code blocks represents a separate cell in your Google Colab notebook. Copy and paste them in order to build and run the machine learning model.</p>
+
+<hr>
+
+<h3>Block 1: Import Libraries</h3>
+<p>This cell loads the necessary tools for our machine learning model.</p>
+<div class="code-block">
+    <button class="copy-btn" onclick="copyCode('code1')">Copy Code</button>
+    <pre id="code1"><code># 1. Import libraries
+# pandas is used for data manipulation and analysis.
+# scikit-learn is the main library for building our model.
+# matplotlib is used for creating visualizations.
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
+</code></pre>
+</div>
 
-# 2. Dataset creation
+<h3>Block 2: Dataset Creation</h3>
+<p>This is our raw data, just like the table in the HTML. Try adding a new feature here, like 'sweetness_score'!</p>
+<div class="code-block">
+    <button class="copy-btn" onclick="copyCode('code2')">Copy Code</button>
+    <pre id="code2"><code># 2. Dataset creation
 data = {
     'fruit': ['apple','apple','banana','banana','orange'],
     'weight': [150,170,120,130,160],
@@ -53,26 +132,47 @@ data = {
     'texture_score': [0,0,1,1,1]
 }
 df = pd.DataFrame(data)
+print(df.head()) # Use this to see your DataFrame!
+</code></pre>
+</div>
 
-# 3. Encode labels
+<h3>Block 3: Preprocessing</h3>
+<p>Machine learning models can't understand text like 'apple' or 'banana'. We convert these fruit names into numbers for the model.</p>
+<div class="code-block">
+    <button class="copy-btn" onclick="copyCode('code3')">Copy Code</button>
+    <pre id="code3"><code># 3. Encode labels
 le = LabelEncoder()
 df['fruit_label'] = le.fit_transform(df['fruit'])
+print(df[['fruit', 'fruit_label']].head())
+</code></pre>
+</div>
 
-# 4. Split data
+<h3>Block 4: Split Data & Train Model</h3>
+<p>We split our data into two groups: training and testing. Try changing the 'test_size' from 0.2 to 0.4 to see what happens!</p>
+<div class="code-block">
+    <button class="copy-btn" onclick="copyCode('code4')">Copy Code</button>
+    <pre id="code4"><code># 4. Split data and train model
 X = df[['weight','color_score','texture_score']]
 y = df['fruit_label']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# 5. Train model
+# Now, we train the model using our training data.
 model = LogisticRegression()
 model.fit(X_train,y_train)
+</code></pre>
+</div>
 
-# 6. Test accuracy
+<h3>Block 5: Test & Visualize</h3>
+<p>The model makes a prediction on the test data, and we can visualize how the features relate to each other.</p>
+<div class="code-block">
+    <button class="copy-btn" onclick="copyCode('code5')">Copy Code</button>
+    <pre id="code5"><code># 5. Test accuracy and visualize
 y_pred = model.predict(X_test)
 accuracy = accuracy_score(y_test,y_pred)
 print(f"Model accuracy: {accuracy:.2f}")
 
-# 7. Visualize fruits
+# Finally, we visualize our data to see how the features relate to each other.
+# The scatter plot shows how fruits with different weights and colors are clustered.
 colors = {0:'red',1:'yellow',2:'orange'}
 plt.scatter(df['weight'],df['color_score'],c=df['fruit_label'].map(colors),s=200)
 plt.xlabel('Weight (g)')
@@ -80,30 +180,10 @@ plt.ylabel('Color Score')
 plt.title('Fruit Visualization')
 plt.show()
 </code></pre>
+</div>
 
-<h2>Interactive Fruit Prediction Game</h2>
-<p>Adjust the sliders and try to predict the fruit!</p>
-
-<label>Weight (g): <span id="weightVal">150</span></label><br>
-<input type="range" id="weightSlider" min="100" max="200" value="150" oninput="updateValue('weightSlider','weightVal')"><br><br>
-
-<label>Color Score (0=green,1=yellow,2=orange/red): <span id="colorVal">1</span></label><br>
-<input type="range" id="colorSlider" min="0" max="2" value="1" step="1" oninput="updateValue('colorSlider','colorVal')"><br><br>
-
-<label>Texture Score (0=smooth,1=rough): <span id="textureVal">0</span></label><br>
-<input type="range" id="textureSlider" min="0" max="1" value="0" step="1" oninput="updateValue('textureSlider','textureVal')"><br><br>
-
-<label>Your Guess:</label><br>
-<select id="studentGuess">
-  <option value="apple">🍎 Apple</option>
-  <option value="banana">🍌 Banana</option>
-  <option value="orange">🍊 Orange</option>
-</select><br><br>
-
-<button onclick="checkPrediction()">Check Prediction</button>
-
-<div id="resultBox"></div>
-
+<hr>
+<br>
 <h2>🍏 Guided Experiments: Feature Engineer Your Fruit!</h2>
 <p>Try these challenges to see how features affect predictions:</p>
 <ul>
@@ -114,46 +194,72 @@ plt.show()
 <li>Experiment 5 (Bonus): Imagine adding a new feature like <em>sweetness_score</em>. How might it improve the model?</li>
 </ul>
 <p>Tip: Change one feature at a time and test the model to understand feature importance.</p>
+</div>
 
 <script>
-function updateValue(sliderId, spanId){
-    document.getElementById(spanId).innerText = document.getElementById(sliderId).value;
-}
-
-// Distance-based prediction function
-function predictFruit(weight, color, texture){
     const dataset = [
-        {fruit:"apple", weight:150, color:2, texture:0},
-        {fruit:"apple", weight:170, color:2, texture:0},
-        {fruit:"banana", weight:120, color:1, texture:1},
-        {fruit:"banana", weight:130, color:1, texture:1},
-        {fruit:"orange", weight:160, color:2, texture:1},
+        { fruit: "apple", weight: 150, color: 2, texture: 0 },
+        { fruit: "apple", weight: 170, color: 2, texture: 0 },
+        { fruit: "banana", weight: 120, color: 1, texture: 0 },
+        { fruit: "banana", weight: 130, color: 1, texture: 0 },
+        { fruit: "orange", weight: 160, color: 2, texture: 1 }
     ];
 
-    let closest = dataset.map(d => ({
-        fruit: d.fruit,
-        distance: Math.abs(d.weight - weight) + Math.abs(d.color - color) + Math.abs(d.texture - texture)
-    }));
+    let currentFruit = null;
 
-    closest.sort((a,b) => a.distance - b.distance);
-    return closest[0].fruit;
-}
+    const colorMap = {
+        0: "green",
+        1: "yellow",
+        2: "orange/red"
+    };
 
-function checkPrediction(){
-    let weight = parseInt(document.getElementById("weightSlider").value);
-    let color = parseInt(document.getElementById("colorSlider").value);
-    let texture = parseInt(document.getElementById("textureSlider").value);
-    let guess = document.getElementById("studentGuess").value;
-    let prediction = predictFruit(weight, color, texture);
+    const textureMap = {
+        0: "smooth",
+        1: "rough"
+    };
 
-    let resultMsg = `🔮 Model predicts: <b>${prediction}</b><br>`;
-    if(guess === prediction){
-        resultMsg += "✅ Your guess was correct!";
-    } else {
-        resultMsg += `❌ Your guess was <b>${guess}</b>. Keep experimenting!`;
+    function startGame() {
+        const randomIndex = Math.floor(Math.random() * dataset.length);
+        currentFruit = dataset[randomIndex];
+
+        document.getElementById("gamePrompt").innerText = "What fruit has these features?";
+        document.getElementById("gameInfo").innerHTML = `
+            <p><strong>Weight:</strong> ${currentFruit.weight}g</p>
+            <p><strong>Color:</strong> ${colorMap[currentFruit.color]}</p>
+            <p><strong>Texture:</strong> ${textureMap[currentFruit.texture]}</p>
+        `;
+        document.getElementById("gameButtons").style.display = "block";
+        document.getElementById("startGameBtn").innerText = "Next Round";
     }
-    document.getElementById("resultBox").innerHTML = resultMsg;
-}
+
+    function checkGuess(guess) {
+        let resultMsg = "";
+        if (guess === currentFruit.fruit) {
+            resultMsg = `✅ Correct! This is a ${currentFruit.fruit}.`;
+        } else {
+            resultMsg = `❌ Incorrect. This is actually a ${currentFruit.fruit}. Keep experimenting!`;
+        }
+        document.getElementById("gameInfo").innerHTML = `
+            ${document.getElementById("gameInfo").innerHTML}
+            <br>
+            <div id="resultBox">${resultMsg}</div>
+        `;
+    }
+    
+    // Function to copy the code from a specific code block
+    function copyCode(elementId) {
+        const codeElement = document.getElementById(elementId);
+        const codeText = codeElement.innerText;
+        
+        const textArea = document.createElement("textarea");
+        textArea.value = codeText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        alert("Python code copied to clipboard!");
+    }
 </script>
 
 </body>
