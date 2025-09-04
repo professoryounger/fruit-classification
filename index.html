@@ -1,21 +1,24 @@
-201~200~<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Fruit Classification Exercise</title>
 <style>
 body { font-family: Arial, sans-serif; line-height: 1.5; margin: 20px; }
-table { border-collapse: collapse; margin-bottom: 20px; }
+table { border-collapse: collapse; margin-bottom: 20px; width: 100%; max-width: 600px; }
 th, td { border: 1px solid #000; padding: 5px 10px; text-align: center; }
 h1, h2 { color: #333; }
-.quiz-option { display: block; margin: 5px 0; padding: 8px; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; background: #f9f9f9; }
-.quiz-option:hover { background: #e6f7ff; }
+input[type=range] { width: 100%; max-width: 400px; }
+select { padding: 5px; font-size: 16px; }
+button { padding: 8px 12px; font-size: 16px; cursor: pointer; }
+#resultBox { margin-top: 20px; font-weight: bold; }
+ul { max-width: 600px; }
 </style>
 </head>
 <body>
 
 <h1>🍎🍌🍊 Fruit Classification Exercise</h1>
-<p>Welcome! In this exercise, we will explore how to classify fruits using simple features like weight, color, and texture. First, let's look at our dataset:</p>
+<p>Welcome! In this exercise, we explore classifying fruits using weight, color, and texture.</p>
 
 <h2>Fruit Dataset</h2>
 <table>
@@ -26,131 +29,132 @@ h1, h2 { color: #333; }
 <th>Texture Score (0=smooth,1=rough)</th>
 </tr>
 <tr><td>🍎 Apple</td><td>150</td><td>2</td><td>0</td></tr>
-<tr><td> Apple</td><td>170</td><td>2</td><td>0</td></tr>
+<tr><td>🍎 Apple</td><td>170</td><td>2</td><td>0</td></tr>
 <tr><td>🍌 Banana</td><td>120</td><td>1</td><td>1</td></tr>
 <tr><td>🍌 Banana</td><td>130</td><td>1</td><td>1</td></tr>
 <tr><td>🍊 Orange</td><td>160</td><td>2</td><td>1</td></tr>
 </table>
 
-<h2>Step 1: Import Libraries</h2>
-<pre><code># Python code for data handling and modeling
+<h2>Step 1: Python Code Overview</h2>
+<p>We will create a simple classification model in Python. Here’s what each step does:</p>
+<pre><code># 1. Import libraries
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
+
+# 2. Dataset creation
+data = {
+    'fruit': ['apple','apple','banana','banana','orange'],
+    'weight': [150,170,120,130,160],
+    'color_score': [2,2,1,1,2],
+    'texture_score': [0,0,1,1,1]
+}
+df = pd.DataFrame(data)
+
+# 3. Encode labels
+le = LabelEncoder()
+df['fruit_label'] = le.fit_transform(df['fruit'])
+
+# 4. Split data
+X = df[['weight','color_score','texture_score']]
+y = df['fruit_label']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# 5. Train model
+model = LogisticRegression()
+model.fit(X_train,y_train)
+
+# 6. Test accuracy
+y_pred = model.predict(X_test)
+accuracy = accuracy_score(y_test,y_pred)
+print(f"Model accuracy: {accuracy:.2f}")
+
+# 7. Visualize fruits
+colors = {0:'red',1:'yellow',2:'orange'}
+plt.scatter(df['weight'],df['color_score'],c=df['fruit_label'].map(colors),s=200)
+plt.xlabel('Weight (g)')
+plt.ylabel('Color Score')
+plt.title('Fruit Visualization')
+plt.show()
 </code></pre>
 
-<h2>Step 2: Create the Dataset</h2>
-<pre><code>data = {
-        'fruit': ['apple','apple','banana','banana','orange'],
-            'weight': [150,170,120,130,160],
-                'color_score': [2,2,1,1,2],
-                    'texture_score': [0,0,1,1,1]
-                    }
-                    df = pd.DataFrame(data)
-                    print(df)
-                    </code></pre>
+<h2>Interactive Fruit Prediction Game</h2>
+<p>Adjust the sliders and try to predict the fruit!</p>
 
-                    <h2>Step 3: Encode Labels</h2>
-                    <pre><code>le = LabelEncoder()
-                    df['fruit_label'] = le.fit_transform(df['fruit'])
-                    print(df)
-                    </code></pre>
+<label>Weight (g): <span id="weightVal">150</span></label><br>
+<input type="range" id="weightSlider" min="100" max="200" value="150" oninput="updateValue('weightSlider','weightVal')"><br><br>
 
-                    <h2>Step 4: Split Data</h2>
-                    <pre><code>X = df[['weight','color_score','texture_score']]
-                    y = df['fruit_label']
-                    X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=42)
-                    </code></pre>
+<label>Color Score (0=green,1=yellow,2=orange/red): <span id="colorVal">1</span></label><br>
+<input type="range" id="colorSlider" min="0" max="2" value="1" step="1" oninput="updateValue('colorSlider','colorVal')"><br><br>
 
-                    <h2>Step 5: Train the Model</h2>
-                    <pre><code>model = LogisticRegression()
-                    model.fit(X_train,y_train)
-                    </code></pre>
+<label>Texture Score (0=smooth,1=rough): <span id="textureVal">0</span></label><br>
+<input type="range" id="textureSlider" min="0" max="1" value="0" step="1" oninput="updateValue('textureSlider','textureVal')"><br><br>
 
-                    <h2>Step 6: Test Accuracy</h2>
-                    <pre><code>y_pred = model.predict(X_test)
-                    accuracy = accuracy_score(y_test,y_pred)
-                    print(f"Model accuracy: {accuracy:.2f}")
-                    </code></pre>
+<label>Your Guess:</label><br>
+<select id="studentGuess">
+  <option value="apple">🍎 Apple</option>
+  <option value="banana">🍌 Banana</option>
+  <option value="orange">🍊 Orange</option>
+</select><br><br>
 
-                    <h2>Step 7: Visualize Fruits</h2>
-                    <pre><code>colors = {0:'red',1:'yellow',2:'orange'}
-                    plt.scatter(df['weight'],df['color_score'],c=df['fruit_label'].map(colors),s=200)
-                    plt.xlabel('Weight (g)')
-                    plt.ylabel('Color Score')
-                    plt.title('Fruit Visualization')
-                    plt.show()
-                    </code></pre>
+<button onclick="checkPrediction()">Check Prediction</button>
 
-                    <h2>Bonus: Predict a New Fruit</h2>
-                    <pre><code>new_fruit = [[140,1,1]]
-                    predicted_label = model.predict(new_fruit)
-                    predicted_fruit = le.inverse_transform(predicted_label)
-                    print(f"The model predicts: {predicted_fruit[0]}")
-                    </code></pre>
+<div id="resultBox"></div>
 
-                    <h2>Interactive Fruit Prediction Game</h2>
-                    <p>Try changing the fruit features below and see how the model predicts!</p>
+<h2>🍏 Guided Experiments: Feature Engineer Your Fruit!</h2>
+<p>Try these challenges to see how features affect predictions:</p>
+<ul>
+<li>Experiment 1: Change the <em>weight</em> of a fruit. How does it affect prediction?</li>
+<li>Experiment 2: Change the <em>color score</em>. What happens if you use a value that doesn’t exist in the dataset?</li>
+<li>Experiment 3: Change the <em>texture score</em>. Observe prediction changes.</li>
+<li>Experiment 4: Try unusual combinations (e.g., smooth yellow). Which fruit is predicted?</li>
+<li>Experiment 5 (Bonus): Imagine adding a new feature like <em>sweetness_score</em>. How might it improve the model?</li>
+</ul>
+<p>Tip: Change one feature at a time and test the model to understand feature importance.</p>
 
-                    <label>Weight (g): <span id="weightVal">150</span></label><br>
-                    <input type="range" id="weightSlider" min="100" max="200" value="150" oninput="updateValue('weightSlider','weightVal')"><br><br>
-
-                    <label>Color Score (0=green,1=yellow,2=orange/red): <span id="colorVal">1</span></label><br>
-                    <input type="range" id="colorSlider" min="0" max="2" value="1" step="1" oninput="updateValue('colorSlider','colorVal')"><br><br>
-
-                    <label>Texture Score (0=smooth,1=rough): <span id="textureVal">0</span></label><br>
-                    <input type="range" id="textureSlider" min="0" max="1" value="0" step="1" oninput="updateValue('textureSlider','textureVal')"><br><br>
-
-                    <label>Your Guess:</label><br>
-                    <select id="studentGuess">
-                      <option value="apple">🍎 Apple</option>
-                        <option value="banana">🍌 Banana</option>
-                          <option value="orange">🍊 Orange</option>
-                          </select><br><br>
-
-                          <button onclick="checkPrediction()">Check Prediction</button>
-
-                          <div id="resultBox" style="margin-top:20px; font-weight:bold;"></div>
-
-                          <script>
-                          function updateValue(sliderId, spanId){
-                                document.getElementById(spanId).innerText = document.getElementById(sliderId).value;
-                                }
-
-                                // Simple model logic based on dataset
-                                function predictFruit(weight,color,texture){
-                                        if(color==1 && texture==1) return "banana";
-                                            if(color==2 && texture==0 && weight>140) return "apple";
-                                                if(color==2 && texture==1) return "orange";
-                                                    return "apple";
-                                                    }
-
-                                                    function checkPrediction(){
-                                                            let weight = parseInt(document.getElementById("weightSlider").value);
-                                                                let color = parseInt(document.getElementById("colorSlider").value);
-                                                                    let texture = parseInt(document.getElementById("textureSlider").value);
-                                                                        let guess = document.getElementById("studentGuess").value;
-                                                                            let prediction = predictFruit(weight,color,texture);
-
-                                                                                let resultMsg = `🔮 Model predicts: <b>${prediction}</b><br>`;
-                                                                                    if(guess===prediction){
-                                                                                                resultMsg += "✅ Your guess was correct!";
-                                                                                                    } else {
-                                                                                                                resultMsg += `❌ Your guess was <b>${guess}</b>. Keep experimenting!`;
-                                                                                                                    }
-                                                                                                                        document.getElementById("resultBox").innerHTML = resultMsg;
-                                                                                                                        }
-                                                                                                                        </script>
-
-                                                                                                                        </body>
-                                                                                                                        </html>
-                                                                                                                        
-                                                                                                    }
-                                                                                    }
-                                                    }
-                                }
-                          })")
+<script>
+function updateValue(sliderId, spanId){
+    document.getElementById(spanId).innerText = document.getElementById(sliderId).value;
 }
+
+// Distance-based prediction function
+function predictFruit(weight, color, texture){
+    const dataset = [
+        {fruit:"apple", weight:150, color:2, texture:0},
+        {fruit:"apple", weight:170, color:2, texture:0},
+        {fruit:"banana", weight:120, color:1, texture:1},
+        {fruit:"banana", weight:130, color:1, texture:1},
+        {fruit:"orange", weight:160, color:2, texture:1},
+    ];
+
+    let closest = dataset.map(d => ({
+        fruit: d.fruit,
+        distance: Math.abs(d.weight - weight) + Math.abs(d.color - color) + Math.abs(d.texture - texture)
+    }));
+
+    closest.sort((a,b) => a.distance - b.distance);
+    return closest[0].fruit;
+}
+
+function checkPrediction(){
+    let weight = parseInt(document.getElementById("weightSlider").value);
+    let color = parseInt(document.getElementById("colorSlider").value);
+    let texture = parseInt(document.getElementById("textureSlider").value);
+    let guess = document.getElementById("studentGuess").value;
+    let prediction = predictFruit(weight, color, texture);
+
+    let resultMsg = `🔮 Model predicts: <b>${prediction}</b><br>`;
+    if(guess === prediction){
+        resultMsg += "✅ Your guess was correct!";
+    } else {
+        resultMsg += `❌ Your guess was <b>${guess}</b>. Keep experimenting!`;
+    }
+    document.getElementById("resultBox").innerHTML = resultMsg;
+}
+</script>
+
+</body>
+</html>
