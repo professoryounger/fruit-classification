@@ -147,22 +147,23 @@ print(df[['fruit', 'fruit_label']].head())
 </code></pre>
 </div>
 
-<h3>Block 4: Split Data & Train Model</h3>
-<p>We split our data into two groups: training and testing. Try changing the 'test_size' from 0.2 to 0.4 to see what happens!</p>
+### Block 4: Split Data & Train Model
+<p>We split our data into two groups: training and testing. We've also increased the number of iterations to solve the convergence warning.</p>
 <div class="code-block">
     <button class="copy-btn" onclick="copyCode('code4')">Copy Code</button>
     <pre id="code4"><code># 4. Split data and train model
+# This is where we fix the ConvergenceWarning by increasing max_iter.
 X = df[['weight','color_score','texture_score']]
 y = df['fruit_label']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # Now, we train the model using our training data.
-model = LogisticRegression()
+model = LogisticRegression(max_iter=1000)
 model.fit(X_train,y_train)
 </code></pre>
 </div>
 
-<h3>Block 5: Test & Visualize</h3>
+### Block 5: Test & Visualize
 <p>The model makes a prediction on the test data, and we can visualize how the features relate to each other.</p>
 <div class="code-block">
     <button class="copy-btn" onclick="copyCode('code5')">Copy Code</button>
